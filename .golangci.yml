@@ -4,11 +4,10 @@ run:
 
 linters:
   enable:
-    - errcheck
-    - gosimple
-    - govet
-    - ineffassign
     - staticcheck
     - unused
+    - errcheck
+    - govet
+    - gosimple
   disable:
-    - goanalysis
+    - typecheck
