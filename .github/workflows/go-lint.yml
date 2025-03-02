@@ -22,6 +22,9 @@ jobs:
         with:
           go-version: "1.23.3"
 
+      - name: Importing external
+        run:  export GOPRIVATE=github.com/SendHive  
+
       - name: Install dependencies
         run: go mod tidy
 
