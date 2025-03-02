@@ -16,14 +16,16 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_TOKEN }}
 
       - name: Set up Go 1.23.3
         uses: actions/setup-go@v5
         with:
           go-version: "1.23.3"
 
-      - name: Importing external
-        run:  export GOPRIVATE=github.com/SendHive  
+      - name: Configure Git to Use PAT for Private Modules
+        run: git config --global url."https://${{ secrets.GH_TOKEN }}@github.com".insteadOf "https://github.com"
 
       - name: Install dependencies
         run: go mod tidy
@@ -34,5 +36,4 @@ jobs:
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
       - name: Run golangci-lint
-        run: |
-          golangci-lint run --allow-parallel-runners
+        run: golangci-lint run --allow-parallel-runners
