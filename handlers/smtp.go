@@ -4,7 +4,7 @@ import (
 	"backend-server/models"
 	"log"
 
-	"github.com/gofiber/fiber/v2"
+	fiber "github.com/gofiber/fiber/v2"
 )
 
 func (h *Handler) CreateSmtpEntry(ctx *fiber.Ctx) error {

@@ -6,7 +6,7 @@ import (
 	"backend-server/services"
 	"log"
 
-	"github.com/gofiber/fiber/v2"
+	fiber "github.com/gofiber/fiber/v2"
 )
 
 func Server() {

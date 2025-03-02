@@ -11,4 +11,4 @@ linters:
     - staticcheck
     - unused
   disable:
-    - typecheck
+    - goanalysis

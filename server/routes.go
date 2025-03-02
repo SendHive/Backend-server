@@ -3,7 +3,7 @@ package server
 import (
 	"backend-server/handlers"
 
-	"github.com/gofiber/fiber/v2"
+	fiber "github.com/gofiber/fiber/v2"
 )
 
 func Routes(app *fiber.App, h *handlers.Handler) {
