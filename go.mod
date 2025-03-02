@@ -1,9 +1,9 @@
 module backend-server
 
-go 1.23.3
+go 1.24.0
 
 require (
-	github.com/SendHive/Infra-Common v0.0.0-20250226125044-9ac4afdf1e0d
+	github.com/SendHive/Infra-Common v0.0.0-20250302092401-a1d80f758e03
 	github.com/gofiber/fiber/v2 v2.52.6
 	github.com/google/uuid v1.6.0
 )
@@ -11,7 +11,7 @@ require (
 require (
 	github.com/andybalholm/brotli v1.1.1 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
-	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
+	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
 	github.com/jackc/pgx/v5 v5.5.5 // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect

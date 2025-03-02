@@ -19,16 +19,34 @@ jobs:
         with:
           token: ${{ secrets.GH_TOKEN }}
 
-      - name: Set up Go 1.23.3
+      - name: Set up Go 1.24.0
         uses: actions/setup-go@v5
         with:
-          go-version: "1.23.3"
+          go-version: "1.24.0"
 
-      - name: Configure Git to Use PAT for Private Modules
-        run: git config --global url."https://${{ secrets.GH_TOKEN }}@github.com".insteadOf "https://github.com"
+      - name: Clean Go module cache
+        run: go clean -modcache
 
+      - name: Configure Git for Private Modules
+        run: |
+          git config --global url."https://${{ secrets.GH_TOKEN }}@github.com/".insteadOf "https://github.com/"
+      
+      - name: Set Go Environment for Private Modules
+        run: |
+          echo "GOPRIVATE=github.com/SendHive" >> $GITHUB_ENV
+          go env -w GOPRIVATE=github.com/SendHive
+
+      - name: Enable Go modules
+        run: go env -w GO111MODULE=on
+  
       - name: Install dependencies
         run: go mod tidy
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Build the project
+        run: go build ./...
 
       - name: Install golangci-lint
         run: |
@@ -36,4 +54,4 @@ jobs:
           echo "$(go env GOPATH)/bin" >> $GITHUB_PATH
 
       - name: Run golangci-lint
-        run: golangci-lint run --allow-parallel-runners
+        run: golangci-lint run --allow-parallel-runners -v
