@@ -15,4 +15,7 @@ func Routes(app *fiber.App, h *handlers.Handler) {
 	smtp.Get("/", h.ListSmtpEntry)
 	smtp.Post("/", h.CreateSmtpEntry)
 	smtp.Put("/", h.UpdateSmtpEntry)
+
+	job := app.Group("/job")
+	job.Post("/", h.CreateJobEntry)
 }

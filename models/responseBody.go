@@ -13,3 +13,8 @@ type ListSmtpEntryResponse struct {
 	Port     string `json:"port"`
 	Username string `json:"username"`
 }
+
+type CreateJobResponse struct {
+	Message string `json:"message"`
+	TaskId  string `json:"task_id"`
+}

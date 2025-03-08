@@ -30,9 +30,12 @@ func (*DBSMTPDetails) BeforeCreate(tx *gorm.DB) error {
 
 type DBJobDetails struct {
 	Id        uuid.UUID `gorm:"primaryKey,column:id"`
+	Name      string    `gorm:"column:name;not null"`
 	UserId    uuid.UUID `gorm:"column:user_id;not null"`
 	CreatedAt time.Time `gorm:"column:created_at;not_null"`
 	TaskId    uuid.UUID `gorm:"column:task_id;not null"`
+	Type      string    `gorm:"column:type;not null"`
+	Status    string    `gorm:"column:status;not null"`
 }
 
 func (DBJobDetails) TableName() string {
@@ -40,6 +43,22 @@ func (DBJobDetails) TableName() string {
 }
 
 func (*DBJobDetails) BeforeCreate(tx *gorm.DB) error {
+	uuid := uuid.New().String()
+	tx.Statement.SetColumn("Id", uuid)
+	return nil
+}
+
+type DBUserDetails struct {
+	Id     uuid.UUID `gorm:"primaryKey,column:id"`
+	UserId uuid.UUID `gorm:"column:user_id;not null"`
+	Name   string    `gorm:"column:name;not null"`
+}
+
+func (DBUserDetails) TableName() string {
+	return "user_tbl"
+}
+
+func (*DBUserDetails) BeforeCreate(tx *gorm.DB) error {
 	uuid := uuid.New().String()
 	tx.Statement.SetColumn("Id", uuid)
 	return nil

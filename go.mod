@@ -3,9 +3,27 @@ module backend-server
 go 1.24.0
 
 require (
-	github.com/SendHive/Infra-Common v0.0.0-20250302092401-a1d80f758e03
 	github.com/gofiber/fiber/v2 v2.52.6
 	github.com/google/uuid v1.6.0
+)
+
+require (
+	github.com/minio/minio-go/v7 v7.0.87
+	github.com/rabbitmq/amqp091-go v1.10.0
+)
+
+require github.com/mitchellh/go-homedir v1.1.0 // indirect
+
+require (
+	github.com/SendHive/Infra-Common v0.0.0-20250308115124-15fb01429d86
+	github.com/dustin/go-humanize v1.0.1 // indirect
+	github.com/go-ini/ini v1.67.0 // indirect
+	github.com/goccy/go-json v0.10.5 // indirect
+	github.com/klauspost/cpuid/v2 v2.2.9 // indirect
+	github.com/minio/crc64nvme v1.0.1 // indirect
+	github.com/minio/md5-simd v1.1.2 // indirect
+	github.com/rs/xid v1.6.0 // indirect
+	golang.org/x/net v0.35.0 // indirect
 )
 
 require (
@@ -21,7 +39,6 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.16 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
-	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.51.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect

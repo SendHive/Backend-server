@@ -18,13 +18,40 @@ func Server() {
 		return
 	}
 
+	// Setting the external queue connection
+	qConn, Iq, err := external.SetupQueue()
+
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	qu, err := external.DeclareQueue(qConn, Iq)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	//Seting connection to the minio
+	mc, mI, err := external.ConnectMinio()
+	if err != nil {
+		log.Println(err)
+		return
+	}
+
+	Jser, err := services.NewJobServiceRequest(qu, qConn, mc, mI)
+	if err != nil {
+		log.Println("error while setting the new job service: ", err)
+		return
+	}
+
 	ser, err := services.NewSmtpServiceRequest()
 	if err != nil {
 		log.Println("error while starting the smtp services: ", err)
 		return
 	}
 
-	handler := handlers.NewHandler().SmtpHandler(ser)
+	handler := handlers.NewHandler().SmtpHandler(ser).JobHandler(Jser)
 	Routes(app, handler)
 
 	err = app.Listen(":8080")
