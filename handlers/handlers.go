@@ -4,7 +4,8 @@ import "backend-server/services"
 
 type Handler struct {
 	SmtpService services.ISmtpService
-	JobService   services.IJobService
+	JobService  services.IJobService
+	UserService  services.IUser
 }
 
 func NewHandler() *Handler {
@@ -18,5 +19,10 @@ func (h *Handler) SmtpHandler(smtp services.ISmtpService) *Handler {
 
 func (h *Handler) JobHandler(job services.IJobService) *Handler {
 	h.JobService = job
+	return h
+}
+
+func(h *Handler) UserHandler(user services.IUser) *Handler {
+	h.UserService = user
 	return h
 }

@@ -51,7 +51,13 @@ func Server() {
 		return
 	}
 
-	handler := handlers.NewHandler().SmtpHandler(ser).JobHandler(Jser)
+	user, err := services.NewUserServiceReqest()
+	if err != nil {
+		log.Println("error while starting the user service: ", err)
+		return
+	}
+
+	handler := handlers.NewHandler().SmtpHandler(ser).JobHandler(Jser).UserHandler(user)
 	Routes(app, handler)
 
 	err = app.Listen(":8080")

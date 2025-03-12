@@ -12,7 +12,10 @@ require (
 	github.com/rabbitmq/amqp091-go v1.10.0
 )
 
-require github.com/mitchellh/go-homedir v1.1.0 // indirect
+require (
+	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
+	github.com/pquerna/otp v1.4.0
+)
 
 require (
 	github.com/SendHive/Infra-Common v0.0.0-20250308115124-15fb01429d86

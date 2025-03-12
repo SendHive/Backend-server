@@ -18,3 +18,7 @@ type CreateJobResponse struct {
 	Message string `json:"message"`
 	TaskId  string `json:"task_id"`
 }
+
+type CreateUserResponse struct {
+	Message string `json:"message"`
+}

@@ -17,3 +17,7 @@ type UpdateSmtpEntryRequest struct {
 type CreateJobRequest struct {
 	Name string `json:"name"`
 }
+
+type CreateUserRequest struct {
+	Name string `json:"name"`
+}

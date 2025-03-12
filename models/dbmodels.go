@@ -49,9 +49,10 @@ func (*DBJobDetails) BeforeCreate(tx *gorm.DB) error {
 }
 
 type DBUserDetails struct {
-	Id     uuid.UUID `gorm:"primaryKey,column:id"`
-	UserId uuid.UUID `gorm:"column:user_id;not null"`
-	Name   string    `gorm:"column:name;not null"`
+	Id        uuid.UUID `gorm:"primaryKey,column:id"`
+	UserId    uuid.UUID `gorm:"column:user_id;not null"`
+	Name      string    `gorm:"column:name;not null"`
+	SecretKey string    `gorm:"column:secret_key"`
 }
 
 func (DBUserDetails) TableName() string {
@@ -59,6 +60,22 @@ func (DBUserDetails) TableName() string {
 }
 
 func (*DBUserDetails) BeforeCreate(tx *gorm.DB) error {
+	uuid := uuid.New().String()
+	tx.Statement.SetColumn("Id", uuid)
+	return nil
+}
+
+type DBSecretsDetails struct {
+	Id        uuid.UUID `gorm:"primaryKey,column:id"`
+	UserId    uuid.UUID `gorm:"column:user_id;not null"`
+	SecretKey string    `gorm:"column:secret_key;not null"`
+}
+
+func (DBSecretsDetails) TableName() string {
+	return "secret_tbl"
+}
+
+func (*DBSecretsDetails) BeforeCreate(tx *gorm.DB) error {
 	uuid := uuid.New().String()
 	tx.Statement.SetColumn("Id", uuid)
 	return nil
