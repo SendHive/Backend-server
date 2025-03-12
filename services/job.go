@@ -77,7 +77,6 @@ func (job *JobService) CreateJobEntry(req *models.CreateJobRequest, userId uuid.
 		}
 	}
 
-
 	if jobDetails.Name == req.Name {
 		return nil, &models.ServiceResponse{
 			Code:    404,
@@ -92,7 +91,6 @@ func (job *JobService) CreateJobEntry(req *models.CreateJobRequest, userId uuid.
 		}
 	}
 
-
 	log.Println("Before user")
 	userDetails, err := job.UserRepo.FindBy(userId)
 	if err != nil {
@@ -102,7 +100,7 @@ func (job *JobService) CreateJobEntry(req *models.CreateJobRequest, userId uuid.
 		}
 	}
 
-	emailContents, err := models.ReadCSV(file, "", userDetails.Name, job.MinioClient, job.IMinio)
+	objectName, err := models.ReadCSV(file, "", userDetails.Name, job.MinioClient, job.IMinio)
 	if err != nil {
 		return nil, &models.ServiceResponse{
 			Code:    500,
@@ -110,15 +108,14 @@ func (job *JobService) CreateJobEntry(req *models.CreateJobRequest, userId uuid.
 		}
 	}
 
-	log.Println(emailContents)
-
 	taskId := uuid.New()
 	jerr := job.JobRepo.Create(&models.DBJobDetails{
-		Name:      req.Name,
-		UserId:    userId,
-		TaskId:    taskId,
-		CreatedAt: time.Now(),
-		Status:    models.STATUS_PENDING,
+		Name:       req.Name,
+		UserId:     userId,
+		TaskId:     taskId,
+		CreatedAt:  time.Now(),
+		Status:     models.STATUS_PENDING,
+		ObjectName: objectName,
 	})
 
 	if jerr != nil {

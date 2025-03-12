@@ -29,13 +29,14 @@ func (*DBSMTPDetails) BeforeCreate(tx *gorm.DB) error {
 }
 
 type DBJobDetails struct {
-	Id        uuid.UUID `gorm:"primaryKey,column:id"`
-	Name      string    `gorm:"column:name;not null"`
-	UserId    uuid.UUID `gorm:"column:user_id;not null"`
-	CreatedAt time.Time `gorm:"column:created_at;not_null"`
-	TaskId    uuid.UUID `gorm:"column:task_id;not null"`
-	Type      string    `gorm:"column:type;not null"`
-	Status    string    `gorm:"column:status;not null"`
+	Id         uuid.UUID `gorm:"primaryKey,column:id"`
+	Name       string    `gorm:"column:name;not null"`
+	UserId     uuid.UUID `gorm:"column:user_id;not null"`
+	CreatedAt  time.Time `gorm:"column:created_at;not_null"`
+	TaskId     uuid.UUID `gorm:"column:task_id;not null"`
+	Type       string    `gorm:"column:type;not null"`
+	ObjectName string    `gorm:"column:object_name;not null"`
+	Status     string    `gorm:"column:status;not null"`
 }
 
 func (DBJobDetails) TableName() string {
