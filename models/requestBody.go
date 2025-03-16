@@ -19,5 +19,12 @@ type CreateJobRequest struct {
 }
 
 type CreateUserRequest struct {
-	Name string `json:"name"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+type CreateLoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }

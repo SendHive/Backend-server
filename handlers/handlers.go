@@ -3,9 +3,10 @@ package handlers
 import "backend-server/services"
 
 type Handler struct {
-	SmtpService services.ISmtpService
-	JobService  services.IJobService
+	SmtpService  services.ISmtpService
+	JobService   services.IJobService
 	UserService  services.IUser
+	LoginService services.ILoginService
 }
 
 func NewHandler() *Handler {
@@ -22,7 +23,12 @@ func (h *Handler) JobHandler(job services.IJobService) *Handler {
 	return h
 }
 
-func(h *Handler) UserHandler(user services.IUser) *Handler {
+func (h *Handler) UserHandler(user services.IUser) *Handler {
 	h.UserService = user
+	return h
+}
+
+func (h *Handler) LoginHandler(login services.ILoginService) *Handler {
+	h.LoginService = login
 	return h
 }

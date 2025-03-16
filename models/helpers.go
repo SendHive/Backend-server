@@ -13,6 +13,7 @@ import (
 	minioDb "github.com/SendHive/Infra-Common/minio"
 	"github.com/google/uuid"
 	"github.com/minio/minio-go/v7"
+	"github.com/skip2/go-qrcode"
 )
 
 type ServiceResponse struct {
@@ -99,4 +100,8 @@ func RandomString(leng int) string {
 	}
 
 	return string(b)
+}
+
+func GenerateQRCode(url string) ([]byte, error) {
+	return qrcode.Encode(url, qrcode.Medium, 256)
 }

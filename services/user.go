@@ -4,6 +4,7 @@ import (
 	"backend-server/dal"
 	"backend-server/models"
 	"backend-server/secrets"
+	"log"
 
 	"github.com/google/uuid"
 )
@@ -11,6 +12,7 @@ import (
 type IUser interface {
 	SetupRepo() error
 	CreateUserEntry(req *models.CreateUserRequest) (*models.CreateUserResponse, error)
+	GetUserQRCodeImage(userId uuid.UUID) (string, error)
 }
 type User struct {
 	UserRepo   dal.IUser
@@ -61,12 +63,25 @@ func (u *User) CreateUserEntry(req *models.CreateUserRequest) (*models.CreateUse
 			Message: "User already exists proceed to login",
 		}
 	}
-	secretKey := secrets.GenerateSecret()
+	secretKey, QrCodeURL := secrets.GenerateSecret(req.Email)
+	log.Println("The Orcode: ", QrCodeURL)
+
+	//Generate the Hash Password
+	password, err := secrets.GenerateHash(req.Password)
+	if err != nil {
+		return nil, &models.ServiceResponse{
+			Code:    500,
+			Message: "error while generating the hash: " + err.Error(),
+		}
+	}
 	userId := uuid.New()
 	err = u.UserRepo.Create(&models.DBUserDetails{
 		UserId:    userId,
 		SecretKey: secretKey,
 		Name:      req.Name,
+		Email:     req.Email,
+		TotsUrl:   QrCodeURL,
+		Password:  password,
 	})
 	if err != nil {
 		return nil, &models.ServiceResponse{
@@ -77,7 +92,7 @@ func (u *User) CreateUserEntry(req *models.CreateUserRequest) (*models.CreateUse
 
 	//Create the enrty in the secret database
 	err = u.SecretRepo.Create(&models.DBSecretsDetails{
-		UserId: userId,
+		UserId:    userId,
 		SecretKey: secretKey,
 	})
 
@@ -93,3 +108,20 @@ func (u *User) CreateUserEntry(req *models.CreateUserRequest) (*models.CreateUse
 	}, nil
 }
 
+func (u *User) GetUserQRCodeImage(userId uuid.UUID) (string, error) {
+	userDetails, err := u.UserRepo.FindBy(userId)
+	if err != nil {
+		return "", &models.ServiceResponse{
+			Code:    500,
+			Message: "error while creating the user entry: " + err.Error(),
+		}
+	}
+	qrcode, err := models.GenerateQRCode(userDetails.TotsUrl)
+	if err != nil {
+		return "", &models.ServiceResponse{
+			Code:    500,
+			Message: "error while genrating the qr code :" + err.Error(),
+		}
+	}
+	return string(qrcode), nil
+}

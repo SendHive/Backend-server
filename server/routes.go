@@ -21,5 +21,9 @@ func Routes(app *fiber.App, h *handlers.Handler) {
 
 	user := app.Group("/user")
 	user.Post("/", h.CreateUserEntry)
+	user.Get("/qr", h.GetUserQRCodeImage)
+
+	login := app.Group("/login")
+	login.Post("/", h.CreateLoginEntry)
 
 }

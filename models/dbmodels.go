@@ -53,7 +53,10 @@ type DBUserDetails struct {
 	Id        uuid.UUID `gorm:"primaryKey,column:id"`
 	UserId    uuid.UUID `gorm:"column:user_id;not null"`
 	Name      string    `gorm:"column:name;not null"`
-	SecretKey string    `gorm:"column:secret_key"`
+	SecretKey string    `gorm:"column:secret_key;not null"`
+	Email     string    `gorm:"column:email;not null"`
+	Password  string    `gorm:"column:password; not null"`
+	TotsUrl   string    `gorm:"column:tots_url;not null"`
 }
 
 func (DBUserDetails) TableName() string {
@@ -77,6 +80,22 @@ func (DBSecretsDetails) TableName() string {
 }
 
 func (*DBSecretsDetails) BeforeCreate(tx *gorm.DB) error {
+	uuid := uuid.New().String()
+	tx.Statement.SetColumn("Id", uuid)
+	return nil
+}
+
+type DbLoginDetails struct {
+	Id      uuid.UUID `gorm:"primaryKey,column:id"`
+	UserId  uuid.UUID `gorm:"column:user_id;not null"`
+	IsLogin bool      `gorm:"column:is_login;not null"`
+}
+
+func (DbLoginDetails) TableName() string {
+	return "login_tbl"
+}
+
+func (*DbLoginDetails) BeforeCreate(tx *gorm.DB) error {
 	uuid := uuid.New().String()
 	tx.Statement.SetColumn("Id", uuid)
 	return nil

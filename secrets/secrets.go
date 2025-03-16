@@ -5,12 +5,13 @@ import (
 	"log"
 
 	"github.com/pquerna/otp/totp"
+	"golang.org/x/crypto/bcrypt"
 )
 
-func GenerateSecret() string {
+func GenerateSecret(email string) (string, string) {
 	key, err := totp.Generate(totp.GenerateOpts{
 		Issuer:      "SendHive",
-		AccountName: "admin@sendHive.com",
+		AccountName: email,
 	})
 	if err != nil {
 		log.Fatal("Error generating TOTP key:", err)
@@ -18,7 +19,7 @@ func GenerateSecret() string {
 	secret := key.Secret()
 	fmt.Println("Secret Key:", key.Secret())
 	fmt.Println("TOTP URL:", key.URL())
-	return secret
+	return secret, key.URL()
 }
 
 func CampareKey(userCode string, storedSecret string) bool {
@@ -27,8 +28,31 @@ func CampareKey(userCode string, storedSecret string) bool {
 	if valid {
 		fmt.Println("Authentication successful!")
 		flag = true
+		return flag
 	} else {
 		fmt.Println(" Invalid TOTP code. Try again.")
+		return flag
 	}
-	return flag
+}
+
+func GenerateHash(password string) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		log.Println("error while generating the hash: ", err)
+		return "", err
+	}
+	return string(hash), nil
+}
+
+func ComparePassword(password, hash string) (bool, error) {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	if err != nil {
+		if err == bcrypt.ErrMismatchedHashAndPassword {
+			log.Println("Password doesn't matches the stored password")
+			return false, nil
+		}
+		log.Println("error while comparing the password: ", err)
+		return false, err
+	}
+	return true, nil
 }

@@ -22,3 +22,7 @@ type CreateJobResponse struct {
 type CreateUserResponse struct {
 	Message string `json:"message"`
 }
+
+type CreateLoginResponse struct {
+	Message string `json:"message"`
+}

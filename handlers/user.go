@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 )
 
 func (h *Handler) CreateUserEntry(ctx *fiber.Ctx) error {
@@ -22,15 +23,15 @@ func (h *Handler) CreateUserEntry(ctx *fiber.Ctx) error {
 			Message: "error while parsing the requestBody: " + err.Error(),
 		}
 	}
-	if requestBody.Name == "" {
+	if requestBody.Name == "" || requestBody.Email == "" || requestBody.Password == "" {
 		return &fiber.Error{
 			Code:    404,
-			Message: "Name in the requestBody is the required field",
+			Message: "Name, Email or Pasword  in the requestBody is the required field",
 		}
 	}
 	resp, err := h.UserService.CreateUserEntry(requestBody)
 	if err != nil {
-		log.Println("error : " + err.Error())
+		log.Println("error while creating the user: " + err.Error())
 		return ctx.JSON(err)
 	}
 
@@ -38,4 +39,20 @@ func (h *Handler) CreateUserEntry(ctx *fiber.Ctx) error {
 		Code:    200,
 		Message: resp.Message,
 	})
+}
+
+func (h *Handler) GetUserQRCodeImage(ctx *fiber.Ctx) error {
+	id := ctx.Query("user-id")
+	if id == "" {
+		return &models.ServiceResponse{
+			Code:    500,
+			Message: "user-id in the query is empty",
+		}
+	}
+	resp, err := h.UserService.GetUserQRCodeImage(uuid.MustParse(id))
+	if err != nil {
+		return ctx.JSON(err)
+	}
+	ctx.Set("Content-Type", "image/png")
+	return ctx.Send([]byte(resp))
 }
