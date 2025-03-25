@@ -68,7 +68,7 @@ func (u *User) FindBy(userId uuid.UUID) (*models.DBUserDetails, error) {
 	}
 	defer transaction.Rollback()
 	resp := &models.DBUserDetails{}
-	ferr := transaction.Find(&resp, &models.DBUserDetails{
+	ferr := transaction.First(&resp, &models.DBUserDetails{
 		UserId: userId,
 	})
 	if ferr.Error != nil {

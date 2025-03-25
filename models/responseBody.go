@@ -26,3 +26,9 @@ type CreateUserResponse struct {
 type CreateLoginResponse struct {
 	Message string `json:"message"`
 }
+
+type ListJobEntryResponse struct {
+	Name   string `json:"name"`
+	Status string `json:"status"`
+	Type   string `json:"type"`
+}

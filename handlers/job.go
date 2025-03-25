@@ -37,3 +37,21 @@ func (h *Handler) CreateJobEntry(ctx *fiber.Ctx) error {
 		Message: resp.Message,
 	})
 }
+
+func (h *Handler) ListJobEntry(ctx *fiber.Ctx) error {
+	id := ctx.Query("user-id")
+	if id == "" {
+		return ctx.Status(400).JSON(fiber.Map{
+			"message": "userId is required",
+		})
+	}
+	resp, err := h.JobService.ListJobEntry(uuid.MustParse(id))
+	if err != nil {
+		return ctx.JSON(err)
+	}
+	return ctx.Status(fiber.StatusOK).JSON(models.ServiceResponse{
+		Code:    200,
+		Message: "",
+		Data:    resp,
+	})
+}

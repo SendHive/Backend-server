@@ -18,6 +18,7 @@ func Routes(app *fiber.App, h *handlers.Handler) {
 
 	job := app.Group("/job")
 	job.Post("/", h.CreateJobEntry)
+	job.Get("/", h.ListJobEntry)
 
 	user := app.Group("/user")
 	user.Post("/", h.CreateUserEntry)

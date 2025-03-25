@@ -20,6 +20,7 @@ type IJobService interface {
 	SetupRepo() error
 	CreateJobEntry(req *models.CreateJobRequest, userId uuid.UUID, file *multipart.FileHeader) (*models.CreateJobResponse, error)
 	UploadFiletoQueue(uuid.UUID, string) error
+	ListJobEntry(userId uuid.UUID) ([]*models.ListJobEntryResponse, error)
 }
 
 type JobService struct {
@@ -181,4 +182,31 @@ func (job *JobService) UploadFiletoQueue(taskId uuid.UUID, name string) error {
 		}
 	}
 	return nil
+}
+
+func (job *JobService) ListJobEntry(userId uuid.UUID) ([]*models.ListJobEntryResponse, error) {
+	userDetails, err := job.UserRepo.FindBy(userId)
+	if err != nil {
+		return nil, &models.ServiceResponse{
+			Code:    500,
+			Message: "error while finding the user: " + err.Error(),
+		}
+	}
+	jobDetails, err := job.JobRepo.FindAll(userDetails.UserId)
+	if err != nil {
+		return nil, &models.ServiceResponse{
+			Code:    500,
+			Message: "error while finding the job: " + err.Error(),
+		}
+	}
+	var resp []*models.ListJobEntryResponse
+	for _, i := range jobDetails {
+		temp := &models.ListJobEntryResponse{}
+		temp.Name = i.Name
+		temp.Status = i.Status
+		temp.Type = i.Type
+		resp = append(resp, temp)
+	}
+	log.Println("the list: ", resp)
+	return resp, nil
 }
