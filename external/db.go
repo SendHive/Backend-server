@@ -23,7 +23,7 @@ func ConnectDB() error {
 
 	//Migrating the tables if not done
 	dbConn.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"")
-	err = dbConn.AutoMigrate(&models.DBSMTPDetails{}, &models.DBJobDetails{}, &models.DBUserDetails{}, &models.DBSecretsDetails{}, &models.DbLoginDetails{})
+	err = dbConn.AutoMigrate(&models.DBSMTPDetails{}, &models.DBJobDetails{}, &models.DBUserDetails{}, &models.DBSecretsDetails{}, &models.DbLoginDetails{}, &models.DbFileDetails{})
 	if err != nil {
 		log.Println("error while migrating the database instance: ", err)
 		return err

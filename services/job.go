@@ -92,7 +92,7 @@ func (job *JobService) CreateJobEntry(req *models.CreateJobRequest, userId uuid.
 		}
 	}
 
-	log.Println("Before user")
+	
 	userDetails, err := job.UserRepo.FindBy(userId)
 	if err != nil {
 		return nil, &models.ServiceResponse{

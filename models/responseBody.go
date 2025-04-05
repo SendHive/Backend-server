@@ -32,3 +32,7 @@ type ListJobEntryResponse struct {
 	Status string `json:"status"`
 	Type   string `json:"type"`
 }
+
+type CreateFileEntryResponse struct {
+	Message string `json:"message"`
+}
