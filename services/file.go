@@ -11,7 +11,10 @@ import (
 	"github.com/minio/minio-go/v7"
 )
 
-type IFileService interface{}
+type IFileService interface {
+	CreateFileEntry(req *models.CreateFileRequest, file *multipart.FileHeader, userId uuid.UUID) (*models.CreateFileEntryResponse, error)
+	ListFiles(userId uuid.UUID) (response []*models.ListFilesResponse, err error)
+}
 
 type FileService struct {
 	FileRepo    dal.IFile
@@ -72,7 +75,42 @@ func (f *FileService) CreateFileEntry(req *models.CreateFileRequest, file *multi
 
 	log.Println("the objectName for the file in the minio: ", objectName)
 
+	ferr := f.FileRepo.Create(&models.DbFileDetails{
+		Name:   objectName,
+		UserId: userDetails.UserId,
+	})
+
+	if ferr != nil {
+		return nil, &models.ServiceResponse{
+			Code:    500,
+			Message: "error while creating  the filedetails: " + ferr.Error(),
+		}
+	}
+
 	return &models.CreateFileEntryResponse{
 		Message: "Created file with name: " + objectName,
 	}, nil
+}
+
+func (f *FileService) ListFiles(userId uuid.UUID) (response []*models.ListFilesResponse, err error) {
+	filesDetails, err := f.FileRepo.FindAll(userId)
+	if err != nil {
+		return nil, &models.ServiceResponse{
+			Code:    500,
+			Message: "error while listing files for the users: " + err.Error(),
+		}
+	}
+	if len(filesDetails) == 0 {
+		return nil, &models.ServiceResponse{
+			Code:    400,
+			Message: "No files currently for this user",
+		}
+	}
+	for _, i := range filesDetails {
+		resp := &models.ListFilesResponse{}
+		resp.Id = i.Id.String()
+		resp.Name = i.Name
+		response = append(response, resp)
+	}
+	return response, nil
 }

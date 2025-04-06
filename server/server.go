@@ -63,7 +63,13 @@ func Server() {
 		return
 	}
 
-	handler := handlers.NewHandler().SmtpHandler(ser).JobHandler(Jser).UserHandler(user).LoginHandler(login)
+	file, err := services.NewFilServiceRequest(mc, mI)
+	if err != nil {
+		log.Println("error while starting the file service: ", err)
+		return
+	}
+
+	handler := handlers.NewHandler().SmtpHandler(ser).JobHandler(Jser).UserHandler(user).LoginHandler(login).FileHeader(file)
 	Routes(app, handler)
 
 	err = app.Listen(":8080")

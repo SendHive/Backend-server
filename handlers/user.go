@@ -56,3 +56,26 @@ func (h *Handler) GetUserQRCodeImage(ctx *fiber.Ctx) error {
 	ctx.Set("Content-Type", "image/png")
 	return ctx.Send([]byte(resp))
 }
+
+func (h *Handler) UserAuthentication(ctx *fiber.Ctx) error {
+	var requestBody = &models.UserAuthenticationRequest{}
+	err := ctx.BodyParser(&requestBody)
+	if err != nil {
+		log.Println("Error in parsing the request Body" + err.Error())
+		return &fiber.Error{
+			Code:    fiber.StatusBadGateway,
+			Message: "error while parsing the requestBody: " + err.Error(),
+		}
+	}
+	userId := ctx.Query("id")
+	resp, err := h.UserService.UserAuthentication(requestBody, uuid.MustParse(userId))
+	if err != nil {
+		log.Println("error while creating the user: " + err.Error())
+		return ctx.JSON(err)
+	}
+
+	return ctx.Status(fiber.StatusOK).JSON(models.ServiceResponse{
+		Code:    200,
+		Message: resp.Message,
+	})
+}

@@ -10,9 +10,9 @@ import (
 )
 
 type IUser interface {
-	SetupRepo() error
 	CreateUserEntry(req *models.CreateUserRequest) (*models.CreateUserResponse, error)
 	GetUserQRCodeImage(userId uuid.UUID) (string, error)
+	UserAuthentication(req *models.UserAuthenticationRequest, userId uuid.UUID) (resp *models.UserAuthenticationResponse, err error)
 }
 type User struct {
 	UserRepo   dal.IUser
@@ -113,7 +113,7 @@ func (u *User) GetUserQRCodeImage(userId uuid.UUID) (string, error) {
 	if err != nil {
 		return "", &models.ServiceResponse{
 			Code:    500,
-			Message: "error while creating the user entry: " + err.Error(),
+			Message: "error while finding the user entry: " + err.Error(),
 		}
 	}
 	qrcode, err := models.GenerateQRCode(userDetails.TotsUrl)
@@ -124,4 +124,24 @@ func (u *User) GetUserQRCodeImage(userId uuid.UUID) (string, error) {
 		}
 	}
 	return string(qrcode), nil
+}
+
+func (u *User) UserAuthentication(req *models.UserAuthenticationRequest, userId uuid.UUID) (resp *models.UserAuthenticationResponse, err error) {
+	userDetails, err := u.UserRepo.FindBy(userId)
+	if err != nil {
+		return nil, &models.ServiceResponse{
+			Code:    500,
+			Message: "error while finding the user entry: " + err.Error(),
+		}
+	}
+	flag := secrets.CampareKey(req.Code, userDetails.SecretKey)
+	if !flag  {
+		return nil, &models.ServiceResponse{
+			Code: 404,
+			Message: "either code is expired or wrong please check",
+		}
+	}
+	return &models.UserAuthenticationResponse{
+		Message: "User Authentication successfully",
+	}, nil
 }

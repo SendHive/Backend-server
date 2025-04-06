@@ -36,3 +36,12 @@ type ListJobEntryResponse struct {
 type CreateFileEntryResponse struct {
 	Message string `json:"message"`
 }
+
+type ListFilesResponse struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type UserAuthenticationResponse struct {
+	Message string `json:"message"`
+}

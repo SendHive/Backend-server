@@ -23,8 +23,13 @@ func Routes(app *fiber.App, h *handlers.Handler) {
 	user := app.Group("/user")
 	user.Post("/", h.CreateUserEntry)
 	user.Get("/qr", h.GetUserQRCodeImage)
+	user.Post("/auth", h.UserAuthentication)
 
 	login := app.Group("/login")
 	login.Post("/", h.CreateLoginEntry)
+
+	file := app.Group("/file")
+	file.Post("/", h.CreateFileEntry)
+	file.Get("/", h.ListFiles)
 
 }

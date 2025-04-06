@@ -21,14 +21,10 @@ func (h *Handler) CreateJobEntry(ctx *fiber.Ctx) error {
 
 	log.Println("the name : ", name)
 
-	file, err := ctx.FormFile("file")
-	if err != nil {
-		return ctx.Status(400).SendString("File is required")
-	}
-
-	userId := ctx.Query("user-id")
+	userId := ctx.Query("file-id")
+	fileId := ctx.Query("file-id")
 	log.Println("the userid:", userId)
-	resp, err := h.JobService.CreateJobEntry(requestBody, uuid.MustParse(userId), file)
+	resp, err := h.JobService.CreateJobEntry(requestBody, uuid.MustParse(userId), uuid.MustParse(fileId))
 	if err != nil {
 		return ctx.JSON(err)
 	}

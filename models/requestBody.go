@@ -32,3 +32,7 @@ type CreateLoginRequest struct {
 type CreateFileRequest struct {
 	Name string `json:"name"`
 }
+
+type UserAuthenticationRequest struct {
+	Code string `json:"code"`
+}

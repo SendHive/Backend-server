@@ -4,11 +4,14 @@ import (
 	"backend-server/external"
 	"backend-server/models"
 	"log"
+
+	"github.com/google/uuid"
 )
 
 type IFile interface {
 	Create(value *models.DbFileDetails) error
 	FindBy(conditions *models.DbFileDetails) (*models.DbFileDetails, error)
+	FindAll(userId uuid.UUID) (response []*models.DbFileDetails, err error)
 }
 
 type File struct{}
@@ -52,4 +55,23 @@ func (f *File) FindBy(conditions *models.DbFileDetails) (*models.DbFileDetails, 
 		return nil, ferr.Error
 	}
 	return resp, nil
+}
+
+func (f *File) FindAll(userId uuid.UUID) (response []*models.DbFileDetails, err error) {
+	dbConn, err := external.GetDbConn()
+	if err != nil {
+		return nil, err
+	}
+	transaction := dbConn.Begin()
+	if transaction.Error != nil {
+		return nil, transaction.Error
+	}
+	defer transaction.Rollback()
+	fileDetails := transaction.Find(&response, &models.DbFileDetails{
+		UserId: userId,
+	})
+	if fileDetails.Error != nil {
+		return nil, fileDetails.Error
+	}
+	return response, nil
 }

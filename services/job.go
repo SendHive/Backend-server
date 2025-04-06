@@ -6,7 +6,6 @@ import (
 	"backend-server/models"
 	"encoding/json"
 	"log"
-	"mime/multipart"
 	"time"
 
 	minioDb "github.com/SendHive/Infra-Common/minio"
@@ -18,7 +17,7 @@ import (
 
 type IJobService interface {
 	SetupRepo() error
-	CreateJobEntry(req *models.CreateJobRequest, userId uuid.UUID, file *multipart.FileHeader) (*models.CreateJobResponse, error)
+	CreateJobEntry(req *models.CreateJobRequest, userId uuid.UUID, fileId uuid.UUID) (*models.CreateJobResponse, error)
 	UploadFiletoQueue(uuid.UUID, string) error
 	ListJobEntry(userId uuid.UUID) ([]*models.ListJobEntryResponse, error)
 }
@@ -26,6 +25,7 @@ type IJobService interface {
 type JobService struct {
 	JobRepo     dal.IJob
 	UserRepo    dal.IUser
+	FileRepo    dal.IFile
 	Queue       amqp091.Queue
 	QConnn      *amqp091.Connection
 	MinioClient *minio.Client
@@ -60,10 +60,16 @@ func (job *JobService) SetupRepo() error {
 	}
 	job.UserRepo = urepo
 
+	frepo, err := dal.NewFileDalRequest()
+	if err != nil {
+		return err
+	}
+	job.FileRepo = frepo
+
 	return nil
 }
 
-func (job *JobService) CreateJobEntry(req *models.CreateJobRequest, userId uuid.UUID, file *multipart.FileHeader) (*models.CreateJobResponse, error) {
+func (job *JobService) CreateJobEntry(req *models.CreateJobRequest, userId uuid.UUID, fileId uuid.UUID) (*models.CreateJobResponse, error) {
 
 	jobDetails, err := job.JobRepo.FindBy(&models.DBJobDetails{
 		Name: req.Name,
@@ -85,27 +91,13 @@ func (job *JobService) CreateJobEntry(req *models.CreateJobRequest, userId uuid.
 		}
 	}
 
-	if file.Size == 0 {
-		return nil, &models.ServiceResponse{
-			Code:    404,
-			Message: "Please check file, the contents of the file are empty.",
-		}
-	}
+	fileDetails, err := job.FileRepo.FindBy(&models.DbFileDetails{
+		Id: fileId,
+	})
 
-	
-	userDetails, err := job.UserRepo.FindBy(userId)
 	if err != nil {
 		return nil, &models.ServiceResponse{
-			Code:    500,
-			Message: "error while fetching the userdetails: " + err.Error(),
-		}
-	}
-
-	objectName, err := models.ReadCSV(file, "", userDetails.Name, job.MinioClient, job.IMinio)
-	if err != nil {
-		return nil, &models.ServiceResponse{
-			Code:    500,
-			Message: "error while reading the csv: " + err.Error(),
+			Code: 500,
 		}
 	}
 
@@ -116,7 +108,7 @@ func (job *JobService) CreateJobEntry(req *models.CreateJobRequest, userId uuid.
 		TaskId:     taskId,
 		CreatedAt:  time.Now(),
 		Status:     models.STATUS_PENDING,
-		ObjectName: objectName,
+		ObjectName: fileDetails.Name,
 	})
 
 	if jerr != nil {
