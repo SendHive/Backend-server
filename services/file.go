@@ -93,6 +93,23 @@ func (f *FileService) CreateFileEntry(req *models.CreateFileRequest, file *multi
 }
 
 func (f *FileService) ListFiles(userId uuid.UUID) (response []*models.ListFilesResponse, err error) {
+	userDetails, err := f.UserRepo.FindBy(userId)
+
+	if err != nil {
+		if err.Error() == "record not found" {
+			return nil, &models.ServiceResponse{
+				Code:    404,
+				Message: "user details not present",
+			}
+		}
+		return nil, &models.ServiceResponse{
+			Code:    500,
+			Message: "error while retriving the user details: " + err.Error(),
+		}
+	}
+
+	log.Println(userDetails.Name)
+
 	filesDetails, err := f.FileRepo.FindAll(userId)
 	if err != nil {
 		return nil, &models.ServiceResponse{

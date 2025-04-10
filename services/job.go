@@ -82,6 +82,11 @@ func (job *JobService) CreateJobEntry(req *models.CreateJobRequest, userId uuid.
 			}
 
 		}
+	} else {
+		return nil, &models.ServiceResponse{
+			Code:    404,
+			Message: "user details not present",
+		}
 	}
 
 	if jobDetails.Name == req.Name {
@@ -97,7 +102,8 @@ func (job *JobService) CreateJobEntry(req *models.CreateJobRequest, userId uuid.
 
 	if err != nil {
 		return nil, &models.ServiceResponse{
-			Code: 500,
+			Code:    500,
+			Message: "error while finding the file in the database: " + err.Error(),
 		}
 	}
 
@@ -105,6 +111,7 @@ func (job *JobService) CreateJobEntry(req *models.CreateJobRequest, userId uuid.
 	jerr := job.JobRepo.Create(&models.DBJobDetails{
 		Name:       req.Name,
 		UserId:     userId,
+		Type:       req.Type,
 		TaskId:     taskId,
 		CreatedAt:  time.Now(),
 		Status:     models.STATUS_PENDING,

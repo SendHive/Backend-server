@@ -26,7 +26,11 @@ func (h *Handler) CreateLoginEntry(ctx *fiber.Ctx) error {
 	}
 	resp, err := h.LoginService.CreateLoginEntry(requestBody)
 	if err != nil {
-		return ctx.JSON(err)
+		if serviceErr, ok := err.(*models.ServiceResponse); ok {
+			return ctx.Status(serviceErr.Code).JSON(err)
+		} else {
+			return ctx.JSON(500, "an unexpected error occurred")
+		}
 	}
 	return ctx.JSON(resp)
 

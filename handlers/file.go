@@ -20,7 +20,11 @@ func (h *Handler) CreateFileEntry(ctx *fiber.Ctx) error {
 	}
 	resp, err := h.FileService.CreateFileEntry(&models.CreateFileRequest{}, file, uuid.MustParse(userId))
 	if err != nil {
-		return ctx.JSON(err)
+		if serviceErr, ok := err.(*models.ServiceResponse); ok {
+			return ctx.Status(serviceErr.Code).JSON(err)
+		} else {
+			return ctx.JSON(500, "an unexpected error occurred")
+		}
 	}
 	return ctx.Status(fiber.StatusOK).JSON(models.ServiceResponse{
 		Code:    200,
@@ -37,7 +41,11 @@ func (h *Handler) ListFiles(ctx *fiber.Ctx) error {
 	}
 	resp, err := h.FileService.ListFiles(uuid.MustParse(userId))
 	if err != nil {
-		return ctx.JSON(err)
+		if serviceErr, ok := err.(*models.ServiceResponse); ok {
+			return ctx.Status(serviceErr.Code).JSON(err)
+		} else {
+			return ctx.JSON(500, "an unexpected error occurred")
+		}
 	}
 	if len((resp)) == 0 {
 		return ctx.Status(fiber.StatusOK).JSON(models.ServiceResponse{

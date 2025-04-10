@@ -10,23 +10,32 @@ import (
 
 func (h *Handler) CreateJobEntry(ctx *fiber.Ctx) error {
 	var requestBody = &models.CreateJobRequest{}
-	name := ctx.FormValue("name")
-	if name == "" {
-		return ctx.Status(400).JSON(fiber.Map{
-			"message": "Name is required",
-		})
-	} else {
-		requestBody.Name = name
+	err := ctx.BodyParser(&requestBody)
+	if err != nil {
+		log.Println("Error in parsing the request Body" + err.Error())
+		return &fiber.Error{
+			Code:    fiber.StatusBadGateway,
+			Message: "error while parsing the requestBody: " + err.Error(),
+		}
 	}
 
-	log.Println("the name : ", name)
+	if requestBody.Name == "" || requestBody.Type == "" {
+		log.Println("the requestBody: ", requestBody)
+		return &fiber.Error{
+			Code:    fiber.StatusBadRequest,
+			Message: "either name or type is missing in the request Body",
+		}
+	}
 
-	userId := ctx.Query("file-id")
+	userId := ctx.Query("user-id")
 	fileId := ctx.Query("file-id")
-	log.Println("the userid:", userId)
 	resp, err := h.JobService.CreateJobEntry(requestBody, uuid.MustParse(userId), uuid.MustParse(fileId))
 	if err != nil {
-		return ctx.JSON(err)
+		if serviceErr, ok := err.(*models.ServiceResponse); ok {
+			return ctx.Status(serviceErr.Code).JSON(err)
+		} else {
+			return ctx.JSON(500, "an unexpected error occurred")
+		}
 	}
 	return ctx.Status(fiber.StatusOK).JSON(models.ServiceResponse{
 		Code:    200,
@@ -43,7 +52,11 @@ func (h *Handler) ListJobEntry(ctx *fiber.Ctx) error {
 	}
 	resp, err := h.JobService.ListJobEntry(uuid.MustParse(id))
 	if err != nil {
-		return ctx.JSON(err)
+		if serviceErr, ok := err.(*models.ServiceResponse); ok {
+			return ctx.Status(serviceErr.Code).JSON(err)
+		} else {
+			return ctx.JSON(500, "an unexpected error occurred")
+		}
 	}
 	return ctx.Status(fiber.StatusOK).JSON(models.ServiceResponse{
 		Code:    200,
