@@ -101,10 +101,7 @@ func (f *FileService) ListFiles(userId uuid.UUID) (response []*models.ListFilesR
 		}
 	}
 	if len(filesDetails) == 0 {
-		return nil, &models.ServiceResponse{
-			Code:    400,
-			Message: "No files currently for this user",
-		}
+		return make([]*models.ListFilesResponse, 0), nil
 	}
 	for _, i := range filesDetails {
 		resp := &models.ListFilesResponse{}

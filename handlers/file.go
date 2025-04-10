@@ -39,6 +39,13 @@ func (h *Handler) ListFiles(ctx *fiber.Ctx) error {
 	if err != nil {
 		return ctx.JSON(err)
 	}
+	if len((resp)) == 0 {
+		return ctx.Status(fiber.StatusOK).JSON(models.ServiceResponse{
+			Code:    200,
+			Message: "No file for the current user",
+			Data:    resp,
+		})
+	}
 	return ctx.Status(fiber.StatusOK).JSON(models.ServiceResponse{
 		Code:    200,
 		Message: "The files as per the user details",
