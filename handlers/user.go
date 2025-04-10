@@ -51,7 +51,11 @@ func (h *Handler) GetUserQRCodeImage(ctx *fiber.Ctx) error {
 	}
 	resp, err := h.UserService.GetUserQRCodeImage(uuid.MustParse(id))
 	if err != nil {
-		return ctx.JSON(err)
+		if serviceErr, ok := err.(*models.ServiceResponse); ok {
+			return ctx.Status(serviceErr.Code).JSON(err)
+		} else {
+			return ctx.JSON(500, "an unexpected error occurred")
+		}
 	}
 	ctx.Set("Content-Type", "image/png")
 	return ctx.Send([]byte(resp))
@@ -70,8 +74,11 @@ func (h *Handler) UserAuthentication(ctx *fiber.Ctx) error {
 	userId := ctx.Query("id")
 	resp, err := h.UserService.UserAuthentication(requestBody, uuid.MustParse(userId))
 	if err != nil {
-		log.Println("error while creating the user: " + err.Error())
-		return ctx.JSON(err)
+		if serviceErr, ok := err.(*models.ServiceResponse); ok {
+			return ctx.Status(serviceErr.Code).JSON(err)
+		} else {
+			return ctx.JSON(500, "an unexpected error occurred")
+		}
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(models.ServiceResponse{

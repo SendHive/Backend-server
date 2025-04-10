@@ -31,8 +31,11 @@ func (h *Handler) CreateSmtpEntry(ctx *fiber.Ctx) error {
 
 	resp, err := h.SmtpService.CreateSmtpEntry(requestBody)
 	if err != nil {
-		log.Println("error : " + err.Error())
-		return ctx.JSON(err)
+		if serviceErr, ok := err.(*models.ServiceResponse); ok {
+			return ctx.Status(serviceErr.Code).JSON(err)
+		} else {
+			return ctx.JSON(500, "an unexpected error occurred")
+		}
 	}
 
 	return ctx.Status(fiber.StatusOK).JSON(models.ServiceResponse{
@@ -60,7 +63,11 @@ func (h *Handler) UpdateSmtpEntry(ctx *fiber.Ctx) error {
 	}
 	resp, err := h.SmtpService.UpdateSmtpEntry(id, requestBody)
 	if err != nil {
-		return ctx.JSON(err)
+		if serviceErr, ok := err.(*models.ServiceResponse); ok {
+			return ctx.Status(serviceErr.Code).JSON(err)
+		} else {
+			return ctx.JSON(500, "an unexpected error occurred")
+		}
 	}
 	return ctx.Status(fiber.StatusOK).JSON(models.ServiceResponse{
 		Code:    200,
@@ -78,7 +85,11 @@ func (h *Handler) ListSmtpEntry(ctx *fiber.Ctx) error {
 	}
 	resp, err := h.SmtpService.ListSmtpEntry(id)
 	if err != nil {
-		return ctx.JSON(err)
+		if serviceErr, ok := err.(*models.ServiceResponse); ok {
+			return ctx.Status(serviceErr.Code).JSON(err)
+		} else {
+			return ctx.JSON(500, "an unexpected error occurred")
+		}
 	}
 	return ctx.Status(fiber.StatusOK).JSON(models.ServiceResponse{
 		Code:    200,
