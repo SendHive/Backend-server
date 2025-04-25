@@ -8,6 +8,7 @@ type Handler struct {
 	UserService  services.IUser
 	LoginService services.ILoginService
 	FileService  services.IFileService
+	ReqService   services.IRequestBody
 }
 
 func NewHandler() *Handler {
@@ -36,5 +37,10 @@ func (h *Handler) LoginHandler(login services.ILoginService) *Handler {
 
 func (h *Handler) FileHeader(file services.IFileService) *Handler {
 	h.FileService = file
+	return h
+}
+
+func (h *Handler) RequestHandler(req services.IRequestBody) *Handler {
+	h.ReqService = req
 	return h
 }

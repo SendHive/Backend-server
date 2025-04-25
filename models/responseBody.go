@@ -45,3 +45,12 @@ type ListFilesResponse struct {
 type UserAuthenticationResponse struct {
 	Message string `json:"message"`
 }
+
+type RequestBodyResponse struct {
+	Message string `json:"message"`
+}
+
+type ListRequestBodyResponse struct {
+	Name       string `json:"name"`
+	Promo_Text string `json:"promo_text"`
+}

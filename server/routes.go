@@ -32,4 +32,9 @@ func Routes(app *fiber.App, h *handlers.Handler) {
 	file.Post("/", h.CreateFileEntry)
 	file.Get("/", h.ListFiles)
 
+	req := app.Group("/req")
+	req.Post("/", h.CreateRequestEntry)
+	req.Get("/", h.ListAllRequestEntry)
+	req.Get("/find", h.FindRequestEntry)
+
 }

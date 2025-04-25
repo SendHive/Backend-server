@@ -37,3 +37,9 @@ type CreateFileRequest struct {
 type UserAuthenticationRequest struct {
 	Code string `json:"code"`
 }
+
+type CreateRequestBodyRequest struct {
+	Name string `json:"name"`
+	Promo_Text string `json:"promo_text"`
+}
+

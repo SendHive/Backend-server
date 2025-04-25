@@ -116,3 +116,20 @@ func (*DbFileDetails) BeforeCreate(tx *gorm.DB) error {
 	tx.Statement.SetColumn("Id", uuid)
 	return nil
 }
+
+type DbRequestBody struct {
+	Id          uuid.UUID `gorm:"primaryKey,column:id"`
+	Name        string    `gorm:"column:name;not null"`
+	UserId      uuid.UUID `gorm:"column:user_id;not null"`
+	RequestBody string    `gorm:"column:request_body;not null"`
+}
+
+func (DbRequestBody) TableName() string {
+	return "promo_tbl"
+}
+
+func (*DbRequestBody) BeforeCreate(tx *gorm.DB) error {
+	uuid := uuid.New().String()
+	tx.Statement.SetColumn("Id", uuid)
+	return nil
+}

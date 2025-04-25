@@ -69,7 +69,13 @@ func Server() {
 		return
 	}
 
-	handler := handlers.NewHandler().SmtpHandler(ser).JobHandler(Jser).UserHandler(user).LoginHandler(login).FileHeader(file)
+	req, err := services.NewRequestBodyServiceRequest()
+	if err != nil {
+		log.Println("error while starting the requestBody service: ", err)
+		return
+	}
+
+	handler := handlers.NewHandler().SmtpHandler(ser).JobHandler(Jser).UserHandler(user).LoginHandler(login).FileHeader(file).RequestHandler(req)
 	Routes(app, handler)
 
 	err = app.Listen(":8080")
