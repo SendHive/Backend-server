@@ -36,5 +36,6 @@ func Routes(app *fiber.App, h *handlers.Handler) {
 	req.Post("/", h.CreateRequestEntry)
 	req.Get("/", h.ListAllRequestEntry)
 	req.Get("/find", h.FindRequestEntry)
+	req.Put("/", h.UpdateRequestEntry)
 
 }

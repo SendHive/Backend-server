@@ -43,3 +43,7 @@ type CreateRequestBodyRequest struct {
 	Promo_Text string `json:"promo_text"`
 }
 
+type UpdateRequestBodyEntry struct {
+	Name string `json:"name"`
+	Promo_Text string `json:"promo_text"`
+}

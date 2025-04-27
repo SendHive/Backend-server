@@ -54,3 +54,8 @@ type ListRequestBodyResponse struct {
 	Name       string `json:"name"`
 	Promo_Text string `json:"promo_text"`
 }
+
+type UpdateRequestEntry struct {
+	Name       string `json:"name"`
+	Promo_Text string `json:"promo_text"`
+}

@@ -3,6 +3,7 @@ package services
 import (
 	"backend-server/dal"
 	"backend-server/models"
+	"log"
 
 	"github.com/google/uuid"
 )
@@ -16,6 +17,7 @@ type IRequestBody interface {
 	CreateRequestEntry(req *models.CreateRequestBodyRequest, userId uuid.UUID) (resp *models.CreateFileEntryResponse, err error)
 	ListAllRequestEntry(userId uuid.UUID) (response []*models.ListRequestBodyResponse, err error)
 	FindRequestEntry(reqId uuid.UUID, userId uuid.UUID) (response *models.ListRequestBodyResponse, err error)
+	UpdateRequestEntry(reqId uuid.UUID, userId uuid.UUID, req *models.UpdateRequestBodyEntry) (response *models.UpdateRequestEntry, err error)
 }
 
 func NewRequestBodyServiceRequest() (IRequestBody, error) {
@@ -126,5 +128,39 @@ func (r *RequestBody) FindRequestEntry(reqId uuid.UUID, userId uuid.UUID) (respo
 	return &models.ListRequestBodyResponse{
 		Name:       resp.Name,
 		Promo_Text: resp.RequestBody,
+	}, nil
+}
+
+func (r *RequestBody) UpdateRequestEntry(reqId uuid.UUID, userId uuid.UUID, req *models.UpdateRequestBodyEntry) (response *models.UpdateRequestEntry, err error) {
+	uErr := r.CheckUser(userId)
+	if uErr != nil {
+		return nil, uErr
+	}
+	resp, err := r.ReqRepo.FindBy(&models.DbRequestBody{
+		Id: reqId,
+	})
+	if err != nil {
+		return nil, &models.ServiceResponse{
+			Code:    500,
+			Message: "error while fetching the promo text details: " + err.Error(),
+		}
+	}
+	log.Println("the promo details: ", resp.RequestBody)
+	log.Println("the requestBody: ", req)
+	Uresponse, err := r.ReqRepo.Update(&models.DbRequestBody{
+		Id:          resp.Id,
+		Name:        req.Name,
+		UserId:      userId,
+		RequestBody: req.Promo_Text,
+	})
+	if err != nil {
+		return nil, &models.ServiceResponse{
+			Code: 500,
+			Message: "error while updating the promo text : "+ err.Error(),
+		}
+	}
+	return &models.UpdateRequestEntry{
+		Name:       Uresponse.Name,
+		Promo_Text: Uresponse.RequestBody,
 	}, nil
 }
